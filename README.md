@@ -1,6 +1,6 @@
 # K2
 
-K2 is a super-lightweight Kali live-build profile aimed at quickly spinning up command-and-control instances. It builds on the upstream Kali live-build configuration with a trimmed image footprint so you can launch C2 infrastructure fast.
+K2 is a super-lightweight Kali live-build profile aimed at quickly spinning up command-and-control instances. It builds on the upstream Kali live-build configuration with a trimmed image footprint so you can launch C2 infrastructure fast. Supported variants are kept lean: Enlightenment (e17) and Openbox.
 
 These are the same [build-scripts](https://gitlab.com/kalilinux/build-scripts) that the [Kali team](https://www.kali.org/) uses to generate the official Kali Linux base images, found here: [kali.org/get-kali/](https://www.kali.org/get-kali/).
 
@@ -8,17 +8,21 @@ These are the same [build-scripts](https://gitlab.com/kalilinux/build-scripts) t
 
 ```console
 $ echo "http://kali.download/kali" > .mirror
-# XFCE desktop
-$ ./build.sh --variant xfce --verbose
-# LXDE desktop
-$ ./build.sh --variant lxde --verbose
 # Enlightenment (e17)
 $ ./build.sh --variant e17 --verbose
+# Openbox (lean, C2-focused)
+$ ./build.sh --variant openbox --verbose
 # Check expected ISO name without building
-$ ./build.sh --variant xfce --get-image-path
+$ ./build.sh --variant openbox --get-image-path
 ```
 
-Images land in `images/` after a successful build. An Openbox profile is not in this tree yet; once one is added under `kali-config/variant-openbox/`, build it the same way with `--variant openbox`.
+Images land in `images/` after a successful build. Openbox lives in `kali-config/variant-openbox/`; build it with `--variant openbox`.
+
+## C2 package hints
+
+- Openbox variant bakes in C2 essentials in `kali-config/variant-openbox/package-lists/kali.list.chroot` (SSH, WireGuard, Python 3/pip, Git, tmux, socat, nmap, gcc/make, golang, curl). Trim or extend that list as needed.
+- To mirror the same toolset in e17, append the same block to `kali-config/variant-e17/package-lists/kali.list.chroot`.
+- Drop your WireGuard config at `kali-config/variant-<name>/includes.chroot/etc/wireguard/wg0.conf`; the hook enables `wg-quick@wg0` automatically when present.
 
 - - -
 
@@ -85,12 +89,11 @@ Build a different Live image version (GNOME and KDE Plasma):
 ```console
 $ ./build.sh \
   --debug \
-  --variant gnome
+  --variant e17
 [...]
-$
 $ ./build.sh \
   --debug \
-  --variant kde
+  --variant openbox
 [...]
 $
 ```

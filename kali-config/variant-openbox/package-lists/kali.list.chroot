@@ -1,0 +1,28 @@
+## K2 openbox live image (lean desktop for C2 use)
+##
+## $ ./build.sh --variant openbox
+
+## Base live image bits
+kali-linux-core
+kali-desktop-live
+xorg
+lightdm
+openbox
+obconf
+network-manager
+lxterminal
+
+## C2 essentials baked in; extend as needed
+openssh-server
+wireguard
+wireguard-tools
+python3
+python3-pip
+git
+tmux
+socat
+nmap
+gcc
+make
+golang
+curl
