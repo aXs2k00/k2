@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+if [ -f /etc/wireguard/wg0.conf ]; then
+    systemctl enable wg-quick@wg0.service || true
+fi
