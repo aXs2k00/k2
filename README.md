@@ -4,6 +4,22 @@ K2 is a super-lightweight Kali live-build profile aimed at quickly spinning up c
 
 These are the same [build-scripts](https://gitlab.com/kalilinux/build-scripts) that the [Kali team](https://www.kali.org/) uses to generate the official Kali Linux base images, found here: [kali.org/get-kali/](https://www.kali.org/get-kali/).
 
+## Quickstart builds
+
+```console
+$ echo "http://kali.download/kali" > .mirror
+# XFCE desktop
+$ ./build.sh --variant xfce --verbose
+# LXDE desktop
+$ ./build.sh --variant lxde --verbose
+# Enlightenment (e17)
+$ ./build.sh --variant e17 --verbose
+# Check expected ISO name without building
+$ ./build.sh --variant xfce --get-image-path
+```
+
+Images land in `images/` after a successful build. An Openbox profile is not in this tree yet; once one is added under `kali-config/variant-openbox/`, build it the same way with `--variant openbox`.
+
 - - -
 
 These images can be used to live boot into Kali, from such a USB/CD/DVD/sdCard, as well offers a basic installation. For more customization during setup, see [kali-installer](https://gitlab.com/kalilinux/build-scripts/kali-installer).
