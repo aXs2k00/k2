@@ -16,13 +16,14 @@ $ ./build.sh --variant openbox --verbose
 $ ./build.sh --variant openbox --get-image-path
 ```
 
-Images land in `images/` after a successful build. Openbox lives in `kali-config/variant-openbox/`; build it with `--variant openbox`.
+Images land in `images/` after a successful build. Openbox lives in `kali-config/variant-openbox/`; build it with `--variant openbox`. Openbox uses `emptty` (CLI display manager) with autologin to the `kali` user; tweak `kali-config/variant-openbox/includes.chroot/etc/emptty/conf` if you want different behavior.
 
 ## C2 package hints
 
 - Openbox variant bakes in C2 essentials in `kali-config/variant-openbox/package-lists/kali.list.chroot` (SSH, WireGuard, Python 3/pip, Git, tmux, socat, nmap, gcc/make, golang, curl). Trim or extend that list as needed.
 - To mirror the same toolset in e17, append the same block to `kali-config/variant-e17/package-lists/kali.list.chroot`.
 - Drop your WireGuard config at `kali-config/variant-<name>/includes.chroot/etc/wireguard/wg0.conf`; the hook enables `wg-quick@wg0` automatically when present.
+- Emptty config for Openbox lives at `kali-config/variant-openbox/includes.chroot/etc/emptty/conf`; adjust `AUTOLOGIN`, `DEFAULT_USER`, or `AUTOLOGIN_SESSION` to change login flow or session.
 
 - - -
 

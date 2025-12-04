@@ -1,0 +1,15 @@
+# K2 defaults for emptty on Openbox
+TTY_NUMBER=1
+SWITCH_TTY=true
+PRINT_ISSUE=true
+PRINT_MOTD=true
+DEFAULT_USER=kali
+AUTOLOGIN=true
+AUTOLOGIN_SESSION=openbox-session
+DBUS_LAUNCH=true
+XINITRC_LAUNCH=false
+VERTICAL_SELECTION=false
+# Keep logs rotating in /var/log/emptty
+LOGGING=rotate
+# Avoid per-session error logs by default
+SESSION_ERROR_LOGGING=disabled

@@ -6,11 +6,11 @@
 kali-linux-core
 kali-desktop-live
 xorg
-lightdm
 openbox
 obconf
 network-manager
 lxterminal
+emptty
 
 ## C2 essentials baked in; extend as needed
 openssh-server
