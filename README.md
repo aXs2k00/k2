@@ -1,10 +1,8 @@
-# Kali-Live Build-Scripts
+# K2
 
-_`live-build` configuration for Kali ISO images._
+K2 is a super-lightweight Kali live-build profile aimed at quickly spinning up command-and-control instances. It builds on the upstream Kali live-build configuration with a trimmed image footprint so you can launch C2 infrastructure fast.
 
 These are the same [build-scripts](https://gitlab.com/kalilinux/build-scripts) that the [Kali team](https://www.kali.org/) uses to generate the official Kali Linux base images, found here: [kali.org/get-kali/](https://www.kali.org/get-kali/).
-
-_Build your Kali Linux image today!_
 
 - - -
 
