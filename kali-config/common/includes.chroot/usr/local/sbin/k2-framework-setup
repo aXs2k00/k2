@@ -1,0 +1,140 @@
+#!/bin/bash
+set -euo pipefail
+
+LOG_FILE=/var/log/k2-framework-setup.log
+STAMP_FILE=/var/lib/k2-framework-setup-done
+TITLE="K2 Framework Setup"
+
+log() {
+  printf '%s %s\n' "$(date -Iseconds)" "$*" | tee -a "$LOG_FILE"
+}
+
+need_root() {
+  if [ "$(id -u)" -ne 0 ]; then
+    echo "Run as root." >&2
+    exit 1
+  fi
+}
+
+ensure_tools() {
+  command -v whiptail >/dev/null 2>&1 || { echo "whiptail is required"; exit 1; }
+  command -v git >/dev/null 2>&1 || { echo "git is required"; exit 1; }
+  command -v curl >/dev/null 2>&1 || { echo "curl is required"; exit 1; }
+}
+
+select_frameworks() {
+  whiptail --title "$TITLE" --checklist "Select frameworks to prepare" 20 78 10 \
+    sliver "Install sliver server/client binaries under /opt/sliver" OFF \
+    havoc "Clone Havoc framework into /opt/havoc (build later)" OFF \
+    merlin "Build Merlin server/agent binaries under /opt/merlin" OFF \
+    villain "Clone Villain and install Python deps under /opt/villain" OFF \
+    posh "Clone PoshC2 and install Python deps under /opt/poshc2" OFF \
+    2>/tmp/k2-framework-choices || true
+  tr -d '"' < /tmp/k2-framework-choices
+}
+
+install_sliver() {
+  log "Installing Sliver..."
+  local dest=/opt/sliver
+  mkdir -p "$dest"
+  local api="https://api.github.com/repos/BishopFox/sliver/releases/latest"
+  local server_url client_url
+  server_url=$(curl -fsSL "$api" | grep -Eo 'https://[^"]*sliver-server_linux' | head -n1 || true)
+  client_url=$(curl -fsSL "$api" | grep -Eo 'https://[^"]*sliver-client_linux' | head -n1 || true)
+  if [ -z "$server_url" ] || [ -z "$client_url" ]; then
+    log "Sliver download URLs not found; skipping."
+    return 1
+  fi
+  curl -fsSL "$server_url" -o "$dest/sliver-server"
+  curl -fsSL "$client_url" -o "$dest/sliver-client"
+  chmod +x "$dest/sliver-server" "$dest/sliver-client"
+  log "Sliver installed to $dest."
+}
+
+install_havoc() {
+  log "Cloning Havoc..."
+  local dest=/opt/havoc
+  if [ -d "$dest/.git" ]; then
+    log "Havoc already present, pulling latest..."
+    git -C "$dest" pull --ff-only || true
+    return 0
+  fi
+  git clone --depth 1 https://github.com/HavocFramework/Havoc "$dest"
+  log "Havoc cloned to $dest (build manually with its docs)."
+}
+
+install_merlin() {
+  log "Installing Merlin..."
+  local dest=/opt/merlin
+  if [ -d "$dest/.git" ]; then
+    log "Merlin already present, pulling latest..."
+    git -C "$dest" pull --ff-only || true
+  else
+    git clone --depth 1 https://github.com/Ne0nd0g/merlin "$dest"
+  fi
+  (cd "$dest" && go build ./cmd/merlinserver && go build ./cmd/merlinagent)
+  log "Merlin built under $dest."
+}
+
+install_villain() {
+  log "Installing Villain..."
+  local dest=/opt/villain
+  if [ -d "$dest/.git" ]; then
+    log "Villain already present, pulling latest..."
+    git -C "$dest" pull --ff-only || true
+  else
+    git clone --depth 1 https://github.com/t3l3machus/Villain "$dest"
+  fi
+  pip3 install --break-system-packages -r "$dest/requirements.txt"
+  log "Villain ready under $dest."
+}
+
+install_posh() {
+  log "Installing PoshC2..."
+  local dest=/opt/poshc2
+  if [ -d "$dest/.git" ]; then
+    log "PoshC2 already present, pulling latest..."
+    git -C "$dest" pull --ff-only || true
+  else
+    git clone --depth 1 https://github.com/nettitude/PoshC2 "$dest"
+  fi
+  pip3 install --break-system-packages -r "$dest/requirements.txt"
+  log "PoshC2 ready under $dest. Run ./C2Server.py -h for options."
+}
+
+run_selected() {
+  local choices=("$@")
+  for item in "${choices[@]}"; do
+    case "$item" in
+      sliver) install_sliver || log "Sliver failed, see log."; ;;
+      havoc) install_havoc || log "Havoc failed, see log."; ;;
+      merlin) install_merlin || log "Merlin failed, see log."; ;;
+      villain) install_villain || log "Villain failed, see log."; ;;
+      posh) install_posh || log "PoshC2 failed, see log."; ;;
+      *) log "Unknown selection: $item";;
+    esac
+  done
+}
+
+main() {
+  need_root
+  ensure_tools
+  if [ -f "$STAMP_FILE" ]; then
+    log "Framework setup already completed; remove $STAMP_FILE to rerun."
+    exit 0
+  fi
+  local selection
+  selection=$(select_frameworks)
+  if [ -z "$selection" ]; then
+    log "No frameworks selected; exiting."
+    touch "$STAMP_FILE"
+    return 0
+  fi
+  # shellcheck disable=SC2206
+  local chosen=($selection)
+  run_selected "${chosen[@]}"
+  touch "$STAMP_FILE"
+  log "Framework setup finished."
+}
+
+main "$@"

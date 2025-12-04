@@ -10,6 +10,7 @@ openbox
 obconf
 network-manager
 lxterminal
+whiptail
 emptty
 
 ## C2 essentials baked in; extend as needed

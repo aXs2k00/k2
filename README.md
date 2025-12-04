@@ -24,6 +24,7 @@ Images land in `images/` after a successful build. Openbox lives in `kali-config
 - To mirror the same toolset in e17, append the same block to `kali-config/variant-e17/package-lists/kali.list.chroot`.
 - Drop your WireGuard config at `kali-config/variant-<name>/includes.chroot/etc/wireguard/wg0.conf`; the hook enables `wg-quick@wg0` automatically when present.
 - Emptty config for Openbox lives at `kali-config/variant-openbox/includes.chroot/etc/emptty/conf`; adjust `AUTOLOGIN`, `DEFAULT_USER`, or `AUTOLOGIN_SESSION` to change login flow or session.
+- First-boot framework menu: a systemd unit (`k2-framework-setup.service`) prompts on TTY1 to optionally pull Sliver, Havoc, Merlin, Villain, or PoshC2. Selections are cloned/built into `/opt/<name>` and logged to `/var/log/k2-framework-setup.log`; rerun manually via `/usr/local/sbin/k2-framework-setup` after removing `/var/lib/k2-framework-setup-done`.
 
 - - -
 

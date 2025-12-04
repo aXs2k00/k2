@@ -15,6 +15,9 @@ kali-desktop-e17
 ##   For the complete list see: https://www.kali.org/tools/kali-meta/
 kali-linux-default
 
+## Helper for first-boot menu
+whiptail
+
 ## Extra Kali packages/tools/applications
 ##   For the complete list see: https://www.kali.org/tools/
 ##                              https://pkg.kali.org/
